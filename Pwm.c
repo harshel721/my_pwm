@@ -1,7 +1,6 @@
 #include "Pwm.h"
 
-static Pwm_ConfigType
-    PwmChannelConfig[1]; // Assuming 1 PWM channel for simplicity
+static Pwm_ConfigType PwmChannelConfig[1]; // Assuming 1 PWM channel for simplicity
 static boolean PwmInitialized = FALSE;
 
 // Function to initialize PWM
@@ -10,21 +9,14 @@ void Pwm_Init(const Pwm_ConfigType *ConfigPtr) {
     // insert error on UART.
     return;
   }
-
-  // Enable clock for TIM1 (or other timers as needed)
-  // ENABLE_TIM1_CLOCK();
 	
-	// Reset TIM2 configuration
-    TIM1->CR1 = 0;  // Enable auto-reload preload
-    TIM1->CR1 |= TIM_CR1_CEN;  // Enable counter (CEN bit)
-
-
-  // Store configuration
-  PwmChannelConfig[0] = ConfigPtr[0];
-
+  TIM1->CR1 = 0;  // Enable auto-reload preload
+	TIM1->CR1 |= TIM_CR1_CEN; // Enable Counter
+	TIM1->SR = 0x0000; // Set status register to 0
+	TIM1->CNT = 0x0000; // Set counter to 0
+	
   // Configure the timer for PWM
-  TIM1->PSC =
-      15; // Prescaler value (adjust based on clock and desired frequency)
+  TIM1->PSC = 83; // Prescaler value (adjust based on clock and desired frequency)
   TIM1->ARR = ConfigPtr[0].defaultPeriod;     // Set auto-reload value
   TIM1->CCR1 = ConfigPtr[0].defaultDutyCycle; // Set initial duty cycle
 
@@ -39,14 +31,12 @@ void Pwm_Init(const Pwm_ConfigType *ConfigPtr) {
     TIM1->CCER &= ~TIM_CCER_CC1P; // Set low polarity
   }
 
-  // Start the timer
-  TIM1->CR1 |= TIM_CR1_CEN; // Enable counter
-
+	TIM1->CR1 |= TIM_CR1_CEN;  // Enable counter (CEN bit)
   PwmInitialized = TRUE;
 }
 
 // Function to deinitialize PWM
-void Pwm_Deinit(void) {
+void Pwm_DeInit(void) {
   if (!PwmInitialized) {
     // Insert error on UART.
     return;
@@ -59,12 +49,12 @@ void Pwm_Deinit(void) {
   TIM1->CCER &= ~TIM_CCER_CC1E; // Disable capture/compare output for Channel 1
 
   // Optionally, reset the configuration values
+	#if 0
   TIM1->PSC = 0;
   TIM1->ARR = 0;
   TIM1->CCR1 = 0;
-
-  // Disable clock for TIM1 (if needed)
-  DISABLE_TIM1_CLOCK();
+	TIM1->CNT = 0;
+	#endif
 
   PwmInitialized = FALSE; // Mark PWM as uninitialized
 }
@@ -93,8 +83,7 @@ void Pwm_SetDutyCycle(Pwm_ChannelType channel, uint16_t dutyCycle) {
 }
 
 // Function to set PWM period and duty cycle
-void Pwm_SetPeriodAndDuty(Pwm_ChannelType ChannelNumber, Pwm_PeriodType Period,
-                          Pwm_DutyCycleType DutyCycle) {
+void Pwm_SetPeriodAndDuty(Pwm_ChannelType ChannelNumber, Pwm_PeriodType Period, Pwm_DutyCycleType DutyCycle) {
   // Check if PWM has been initialized
   if (!PwmInitialized) {
     // Insert error handling (e.g., send error on UART)
@@ -124,7 +113,7 @@ Pwm_OutputStateType Pwm_GetOutputState(Pwm_ChannelType channel) {
     return FALSE; // Or handle as appropriate
   }
 
-  // Validate the channel (assuming only one channel for simplicity)
+  // Validatche the channel (assuming only one channel for simplicity)
   if (channel != 0) {
     // Insert error handling for invalid channel
     return FALSE; // Or handle as appropriate

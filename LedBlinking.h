@@ -5,5 +5,6 @@
 #include "Mcu.h"
 #include "Port.h"
 #include "Pwm.h"
+#include "Uart.h"
 
 #endif

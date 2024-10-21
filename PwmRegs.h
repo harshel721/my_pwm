@@ -111,14 +111,4 @@ typedef struct {
 /* Bit definitions for TIM_EGR register */
 #define TIM_EGR_UG (1U << 0) // Update generation (re-initialize counter)
 
-/* Example usage macros */
-#define ENABLE_TIM2_CLOCK() (RCC->APB1ENR |= RCC_APBxENR_TIMxEN)
-#define DISABLE_TIM2_CLOCK() (RCC->APB1ENR &= ~RCC_APBxENR_TIMxEN)
-
-#define ENABLE_TIM1_CLOCK() (RCC->APB2ENR |= RCC_APBxENR_TIMxEN)
-#define DISABLE_TIM1_CLOCK() (RCC->APB2ENR &= ~RCC_APBxENR_TIMxEN)
-
-#define ENABLE_TIM8_CLOCK() (RCC->APB2ENR |= RCC_APBxENR_TIMxEN)
-#define DISABLE_TIM8_CLOCK() (RCC->APB2ENR &= ~RCC_APBxENR_TIMxEN)
-
 #endif
